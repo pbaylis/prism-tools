@@ -7,12 +7,6 @@ Because these data, in particular the monthly and daily gridded datasets, are so
 
 All code on this repository is in R, and uses `data.table`, `raster` (and maybe `velox`), `sf`, the `tidyverse` and `fst`. 
 
-## Converting to tabular format
-
-This is straightforward task, 
-
-## Aggregating to shapefiles
-
 ## A note on directory structure
 
 Because the PRISM files are large, I don't save them to github. Instead, I save them in a separate directory -- on my machine, that's `/data1/prism/raw`, and I save the processed data to `/data1/prism/processed`. You will need to adjust the scripts to suit your needs.
