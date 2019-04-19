@@ -1,10 +1,6 @@
 # Aggregate PRISM raster data to shapefiles, possibly including population weights.
 # TODO:
-# - Change to handle monthly or daily data.
 # - Functionalize (? - Consider quadratics, should those be squared first?).
-# - Get this working for daily data again.
-# - Get this working using the output from the tabular data again.
-# - Have it return something useful, not just poly_id?
 
 library(tidyverse)
 library(raster)
@@ -23,6 +19,7 @@ PROCESSED <- "/data1/prism/processed"
 ANCILLARY <- "/data1/prism/ancillary"
 
 source("~/github/prism-tools/dummy_cols_pb.R")
+source("~/github/prism-tools/convert_to_tabular.R")
 
 # Functions ----
 
@@ -90,30 +87,11 @@ aggregate_prism <- function(zip_files = NULL, in_fst = NULL, weights, weight_var
   
   if (!is.null(zip_files)) {
     print(sprintf("Loading zip files"))
-    unzipped <- unlist(lapply(zip_files, unzip, exdir = TMP))
-    bil_files <- grep("[0-9]{6,8}_bil\\.bil$", unzipped, value = T)
+    dt <- convert_prism_to_tabular(zip_files)
     
-    stack <- stack(bil_files)
-    dt_wide <- as.data.table(values(stack))
-    invisible(file.remove(unzipped))
-    
-    dt_wide[, cell := 1:nrow(dt_wide)]
-    dt_long <- melt(dt_wide, id.vars = "cell")
-    
-    # Save metadata from filenames to the data.table
-    prism_meta <- data.table(variable = grep("PRISM", names(dt_wide), value = T))
-    prism_meta[, c("obs_type", "period") := tstrsplit(variable, "_")[c(2,5)]]
-    
-    dt_long <- merge(dt_long, prism_meta, by = c("variable"))
-    
-    # Cast wide so columns are observation types
-    dt <- dcast(dt_long, cell + period ~ obs_type, value.var = "value")
   } else {
     print(sprintf("Loading %s", in_fst))
     dt <- read_fst(in_fst, as.data.table = T, to = NULL)
-    if ("date" %in% names(dt)) { 
-      setnames(dt, "date", "period")
-    }
   }
 
   # Apply binned cuts to data
