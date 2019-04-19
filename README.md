@@ -5,7 +5,7 @@ Because these data, in particular the monthly and daily gridded datasets, are so
 
 ## Requirements
 
-All code on this repository is in R, and uses `data.table`, `raster` (and maybe `velox`), `sf`, the `tidyverse` and `fst`. 
+All code on this repository is in R a variety of packages. See code for details.
 
 ## A note on directory structure
 
