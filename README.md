@@ -5,7 +5,7 @@ Because these data, in particular the monthly and daily gridded datasets, are so
 
 ## Requirements
 
-All code on this repository is in R a variety of packages. See code for details.
+All code on this repository is in R a variety of packages. See code for details. Note that these operations can eat up a _lot_ of memory, particularly the operations that deal with daily data.
 
 ## A note on directory structure
 

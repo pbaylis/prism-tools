@@ -45,12 +45,16 @@ for (this_year in unique(year(daily_zip_files$date))) {
   
   dt <- convert_prism_to_tabular(zip_files = zip_files)
   
-  dt[, `:=`(period = as.IDate(period, "%Y%m%d"),
-            poly_id = counties %>% slice(poly_id) %>% pull(GEOID))]
-  setnames(dt, c("period", "poly_id"), c("date", "fips"))
-  
+  # Convert period to date (more efficient than a direct conversion)
+  dates <- dt[, .N, by = period]
+  dates[, date := as.IDate(period, "%Y%m%d")]
+  dt <- merge(dt, dates[, .(period, date)], by = c("period"))
+  dt[, period := NULL]
+  setcolorder(dt, c("cell", "date"))
+
   write_fst(dt, 
             file.path(PROCESSED, "daily_gridded_fst", sprintf("%s.fst", this_year)), 
             compress = 100)
+  rm("dt")
 }
 
