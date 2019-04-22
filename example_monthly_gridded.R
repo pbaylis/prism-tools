@@ -1,4 +1,8 @@
 # Resave raw PRISM raster data as fst for further processing.
+# TODO:
+# - There's something with 2016 (and maybe onward) data, but I'm not sure what it is.
+#   - All NAs for the raster? Also misalignment of projections?
+#   - I'm not using right now, so not a high priority for me to figure out.
 
 library(tidyverse)
 library(raster)
@@ -26,7 +30,7 @@ setorder(monthly_zip_files, period, obs_type, primacy)
 monthly_zip_files <- unique(monthly_zip_files, by = c("period", "obs_type"))
 
 for (this_year in unique(monthly_zip_files$period)) {
-  # this_year <- 1950
+  this_year <- 2016
   print(this_year)
   zip_files <- monthly_zip_files[period == this_year, path]
   
@@ -38,4 +42,6 @@ for (this_year in unique(monthly_zip_files$period)) {
             file.path(PROCESSED, "monthly_gridded_fst", sprintf("%s.fst", this_year)), 
             compress = 100)
 }
+
+
 

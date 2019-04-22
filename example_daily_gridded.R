@@ -39,7 +39,9 @@ setorder(daily_zip_files, period, obs_type, primacy)
 daily_zip_files <- unique(daily_zip_files, by = c("period", "obs_type"))
 daily_zip_files[, date := as.IDate(period, format = "%Y%m%d")]
 
-for (this_year in unique(year(daily_zip_files$date))) {
+all_years <- unique(year(daily_zip_files$date))
+all_years <- 1983:2018 # TEMP
+for (this_year in all_years) {
   print(this_year)
   zip_files <- daily_zip_files[year(date) == this_year, path]
   
