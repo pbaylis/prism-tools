@@ -19,7 +19,7 @@ PROCESSED <- "/data1/prism/processed"
 ANCILLARY <- "/data1/prism/ancillary"
 
 source("~/github/prism-tools/dummy_cols_pb.R")
-source("~/github/prism-tools/convert_to_tabular.R")
+source("~/github/prism-tools/convert_prism_to_tabular.R")
 
 # Functions ----
 
@@ -52,7 +52,7 @@ get_weights <- function(rast, poly, normalizeWeights = T, pop_weights = T) {
     uspop_rast <- raster(file.path(ANCILLARY, "uspop300.tif"))
     
     # Use resample (with, as default, bilinear interpolation) to align with PRISM grid
-    uspop_rs <- resample(uspop_rast, sample_rast)
+    uspop_rs <- resample(uspop_rast, rast)
     popweights <- data.table(cell = 1:length(uspop_rs), pop = getValues(uspop_rs))
     
     weights <- merge(weights, popweights, by = c("cell"))
