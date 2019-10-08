@@ -1,4 +1,5 @@
 # Aggregate daily files by county
+# Last run: 2019-10-03
 
 source("aggregate_to_poly.R")
 
@@ -20,10 +21,14 @@ sample_rast <- raster(bil_files)
 counties <- st_read("~/Dropbox/01_Research/99_Common/geo/cb_2015_us_county_20m")
 weights <- get_weights(sample_rast, counties)
 
+all_years <- unique(year(daily_zip_files$date))
 
-for (this_year in unique(year(daily_zip_files$date))) {
-  this_year <- 1981
+for (this_year in 1982:2019) {
+  # this_year <- 1981
   print(this_year)
+  
+  out_file <- file.path(PROCESSED, "daily_county_popweighted", sprintf("%s.fst", this_year))
+  
   zip_files <- daily_zip_files[year(date) == this_year, path]
   
   poly_agg <- aggregate_prism(zip_files = zip_files,
@@ -32,11 +37,11 @@ for (this_year in unique(year(daily_zip_files$date))) {
                               cut_list = list(tmax = c(-Inf, seq(5, 40, 5), Inf),
                                               tmin = c(-Inf, seq(0, 35, 5), Inf)))
   
-  poly_agg[, `:=`(period = as.date(period, "%Y%m%d"),
+  poly_agg[, `:=`(period = as.IDate(period, "%Y%m%d"),
                   poly_id = counties %>% slice(poly_id) %>% pull(GEOID))]
   setnames(poly_agg, c("period", "poly_id"), c("date", "fips"))
   
   write_fst(poly_agg, 
-            file.path(PROCESSED, "daily_county_popweighted", sprintf("%s.fst", this_year)), 
+            out_file,
             compress = 100)
 }
